@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BLNR — карманный стилист. Ваш гардероб с искусственным интеллектом</title>
+  <meta name="description" content="Фотографируйте одежду — ИИ распознаёт цвет, стиль, бренд и материал, а затем собирает образы под погоду, событие и настроение. Android и iOS." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a class="nav__logo" href="#">BLNR<span>.</span></a>
+    <nav class="nav__links">
+      <a href="#features">Возможности</a>
+      <a href="#how">Как это работает</a>
+      <a href="#download">Скачать</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <p class="hero__eyebrow reveal">Карманный стилист · Android &amp; iOS</p>
+      <h1 class="hero__title">
+        <span class="reveal">Ваш гардероб</span>
+        <span class="reveal hero__title-accent">думает за вас</span>
+      </h1>
+      <p class="hero__sub reveal">
+        Сфотографируйте вещь — искусственный интеллект распознает категорию, цвет, стиль,
+        бренд и материал. А утром BLNR соберёт образ под погоду за окном, ваше настроение
+        и планы на день.
+      </p>
+      <div class="hero__cta reveal">
+        <a class="btn btn--primary" href="#download">Скачать приложение</a>
+        <a class="btn btn--ghost" href="#how">Посмотреть, как это работает</a>
+      </div>
+      <div class="hero__scroll reveal" aria-hidden="true">
+        <span></span>
+        листайте
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section" id="features">
+      <h2 class="section__title reveal">Что умеет <em>BLNR</em></h2>
+      <div class="cards">
+        <article class="card reveal" data-tilt>
+          <div class="card__icon">📸</div>
+          <h3>ИИ-распознавание</h3>
+          <p>Одно фото — и вещь в каталоге. Нейросеть определяет категорию, цвет, материал, бренд и даже температуру, при которой вещь комфортна.</p>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card__icon">🌦</div>
+          <h3>Погода в реальном времени</h3>
+          <p>BLNR знает прогноз в вашем городе и никогда не предложит шёлковое платье в метель — или пуховик в жару.</p>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card__icon">✨</div>
+          <h3>Образы под событие</h3>
+          <p>Работа, свидание, вечеринка или прогулка — стилист подбирает сочетания из ваших вещей с учётом дресс-кода и цветовой гармонии.</p>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card__icon">🎭</div>
+          <h3>Настроение имеет значение</h3>
+          <p>Дерзкое, уютное, уверенное или игривое — образ подстраивается под то, как вы себя чувствуете сегодня.</p>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card__icon">🧳</div>
+          <h3>Весь гардероб в кармане</h3>
+          <p>Каталог вещей с фильтрами по категориям, сезонам и стилям. Больше никаких «нечего надеть» перед открытым шкафом.</p>
+        </article>
+        <article class="card reveal" data-tilt>
+          <div class="card__icon">🔒</div>
+          <h3>Данные остаются у вас</h3>
+          <p>Фотографии и каталог хранятся на устройстве. Никаких аккаунтов, рекламы и продажи данных.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section section--how" id="how">
+      <h2 class="section__title reveal">Три шага до идеального образа</h2>
+      <ol class="steps">
+        <li class="step reveal">
+          <span class="step__num">01</span>
+          <h3>Фотографируете</h3>
+          <p>Снимаете одежду на камеру телефона — по одной вещи. Хоть весь шкаф за вечер.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">02</span>
+          <h3>ИИ запоминает</h3>
+          <p>Claude анализирует фото и заполняет карточку: цвет, стиль, бренд, материал, сезон, формальность.</p>
+        </li>
+        <li class="step reveal">
+          <span class="step__num">03</span>
+          <h3>Получаете образы</h3>
+          <p>Выбираете событие и настроение — BLNR сверяется с погодой и собирает готовые сочетания.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- DOWNLOAD -->
+    <section class="section section--cta" id="download">
+      <h2 class="section__title reveal">Начните со своего шкафа</h2>
+      <p class="cta__sub reveal">
+        Открытый исходный код. Соберите приложение из репозитория для Android и iOS — или
+        дождитесь релиза в сторах.
+      </p>
+      <div class="hero__cta reveal">
+        <a class="btn btn--primary" href="https://github.com/nodirzar/blnr" target="_blank" rel="noopener">GitHub-репозиторий</a>
+      </div>
+      <div class="stores reveal" aria-hidden="true">
+        <span class="store">App Store — скоро</span>
+        <span class="store">Google Play — скоро</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 BLNR</span>
+    <span>Сделано с любовью к хорошей одежде</span>
+  </footer>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
