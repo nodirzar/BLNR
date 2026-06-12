@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryButton, Screen, Subtitle, Title } from '@/components/ui';
 import { palette, radius, spacing } from '@/lib/theme';
 import type { ClothingItem } from '@/lib/types';
-import { analyzeClothingImage, draftAnalysis } from '@/services/ai';
+import { analyzeClothingImage, analyzeViaProxy, draftAnalysis } from '@/services/ai';
 import { useSettings } from '@/store/settings';
 import { useWardrobe } from '@/store/wardrobe';
 
@@ -23,7 +23,10 @@ export default function AddItemScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const apiKey = useSettings((s) => s.anthropicApiKey);
+  const proxyUrl = useSettings((s) => s.proxyUrl);
+  const proxyToken = useSettings((s) => s.proxyToken);
   const addItem = useWardrobe((s) => s.addItem);
+  const aiAvailable = Boolean(proxyUrl || apiKey);
 
   const [image, setImage] = useState<PickedImage | null>(null);
   const [busy, setBusy] = useState(false);
@@ -64,10 +67,12 @@ export default function AddItemScreen() {
     if (!image) return;
     setBusy(true);
     try {
-      setStatus(apiKey ? 'ИИ изучает вашу вещь…' : 'Создаю черновик карточки…');
-      const analysis = apiKey
-        ? await analyzeClothingImage(apiKey, image.base64, image.mimeType)
-        : draftAnalysis();
+      setStatus(aiAvailable ? 'ИИ изучает вашу вещь…' : 'Создаю черновик карточки…');
+      const analysis = proxyUrl
+        ? await analyzeViaProxy(proxyUrl, proxyToken, image.base64, image.mimeType)
+        : apiKey
+          ? await analyzeClothingImage(apiKey, image.base64, image.mimeType)
+          : draftAnalysis();
 
       setStatus('Сохраняю…');
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -80,7 +85,7 @@ export default function AddItemScreen() {
         id,
         imageUri: stored.uri,
         createdAt: Date.now(),
-        isDraft: !apiKey,
+        isDraft: !aiAvailable,
       };
       addItem(item);
       setImage(null);
@@ -123,10 +128,10 @@ export default function AddItemScreen() {
           </View>
         )}
 
-        {!apiKey && (
+        {!aiAvailable && (
           <Text style={styles.hint}>
-            Без ключа Claude API вещь сохранится черновиком — заполните карточку вручную или добавьте
-            ключ на вкладке «Профиль».
+            ИИ-распознавание не настроено: вещь сохранится черновиком. Укажите адрес сервера BLNR
+            (рекомендуется) или ключ Claude API на вкладке «Профиль».
           </Text>
         )}
       </ScrollView>

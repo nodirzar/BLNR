@@ -11,6 +11,7 @@
 
 ```
 app/      — мобильное приложение (Expo / React Native, TypeScript)
+server/   — backend-прокси: держит ключ Claude API на сервере (Node + Express)
 website/  — лендинг с 3D-сценой на Three.js (статический сайт)
 ```
 
@@ -42,14 +43,15 @@ npm run android    # Android
 npm run ios        # iOS (нужен macOS)
 ```
 
-### Ключ Claude API
+### Подключение ИИ
 
-ИИ-распознавание включается на вкладке **Профиль** — вставьте ключ из
-[platform.claude.com](https://platform.claude.com). Ключ хранится только на устройстве.
+Два способа, настраиваются на вкладке **Профиль**:
 
-> ⚠️ Для публичного релиза не вшивайте ключ в приложение: поднимите тонкий
-> backend-прокси, который будет вызывать Claude API от имени приложения,
-> и держите ключ на сервере.
+1. **Сервер BLNR (рекомендуется)** — укажите адрес backend-прокси из каталога
+   [`server/`](server/README.md) и токен приложения. Ключ Claude API остаётся
+   на сервере и в приложение не попадает.
+2. **Прямой ключ Claude API** — для разработки: вставьте ключ из
+   [platform.claude.com](https://platform.claude.com), он хранится только на устройстве.
 
 ### Сборка релиза
 
@@ -62,9 +64,23 @@ npx eas build --platform ios
 
 ---
 
+## Backend-прокси (`server/`)
+
+Node + Express + `@anthropic-ai/sdk`. Эндпоинт `POST /api/analyze` принимает фото
+в base64 и возвращает карточку вещи. Авторизация по общему секрету (`APP_TOKEN`),
+rate limit 10 запросов/мин на IP. Подробности и деплой: [server/README.md](server/README.md).
+
+```bash
+cd server && npm install
+ANTHROPIC_API_KEY=sk-ant-... APP_TOKEN=секрет npm run dev
+```
+
+---
+
 ## Сайт (`website/`)
 
-Статический лендинг без сборки: Three.js через CDN (import map).
+Статический лендинг без сборки: Three.js лежит локально в `js/vendor/`
+(не зависит от CDN), UI-анимации работают даже без WebGL.
 
 **3D motion-эффекты:**
 - анимированная «шёлковая ткань» на вершинном шейдере (GLSL);

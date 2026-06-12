@@ -1,7 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-import type { ClothingAnalysis } from '@/lib/types';
+export type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/webp';
 
+/**
+ * Схема карточки вещи. Должна совпадать с ClothingAnalysis
+ * в мобильном приложении (app/src/lib/types.ts).
+ */
 const ANALYSIS_SCHEMA = {
   type: 'object',
   properties: {
@@ -53,13 +57,14 @@ const SYSTEM_PROMPT =
   'обуви или аксессуара. Определи, что это, и заполни карточку вещи максимально точно. ' +
   'Бренд указывай только если он действительно различим на фото. Все текстовые поля — на русском языке.';
 
-export async function analyzeClothingImage(
-  apiKey: string,
-  base64Image: string,
-  mediaType: 'image/jpeg' | 'image/png' | 'image/webp',
-): Promise<ClothingAnalysis> {
-  const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+const client = new Anthropic(); // читает ANTHROPIC_API_KEY из окружения
 
+export class RefusalError extends Error {}
+
+export async function analyzeClothingImage(
+  base64Image: string,
+  mediaType: ImageMediaType,
+): Promise<unknown> {
   const response = await client.messages.create({
     model: 'claude-opus-4-8',
     max_tokens: 2048,
@@ -77,71 +82,12 @@ export async function analyzeClothingImage(
   });
 
   if (response.stop_reason === 'refusal') {
-    throw new Error('ИИ не смог обработать это изображение. Попробуйте другое фото.');
+    throw new RefusalError('ИИ не смог обработать это изображение.');
   }
 
   const textBlock = response.content.find((b) => b.type === 'text');
   if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('Пустой ответ от ИИ. Попробуйте ещё раз.');
+    throw new Error('Пустой ответ модели');
   }
-  return JSON.parse(textBlock.text) as ClothingAnalysis;
-}
-
-/**
- * Анализ через backend-прокси (каталог server/ в репозитории).
- * Рекомендуемый способ: ключ Claude API остаётся на сервере.
- */
-export async function analyzeViaProxy(
-  proxyUrl: string,
-  proxyToken: string,
-  base64Image: string,
-  mediaType: 'image/jpeg' | 'image/png' | 'image/webp',
-): Promise<ClothingAnalysis> {
-  let res: Response;
-  try {
-    res = await fetch(`${proxyUrl}/api/analyze`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        ...(proxyToken ? { 'x-app-token': proxyToken } : {}),
-      },
-      body: JSON.stringify({ image: base64Image, mediaType }),
-    });
-  } catch {
-    throw new Error('Сервер недоступен. Проверьте адрес сервера в настройках и подключение к сети.');
-  }
-
-  const body = await res.json().catch(() => null);
-  if (!res.ok) {
-    const message =
-      body && typeof body.error === 'string' ? body.error : `Сервер вернул ошибку ${res.status}.`;
-    throw new Error(message);
-  }
-  if (!body?.card) {
-    throw new Error('Сервер вернул неожиданный ответ.');
-  }
-  return body.card as ClothingAnalysis;
-}
-
-/**
- * Заглушка для демо-режима (без ключа API): создаёт черновик карточки,
- * который пользователь заполняет вручную.
- */
-export function draftAnalysis(): ClothingAnalysis {
-  return {
-    name: 'Новая вещь',
-    category: 'top',
-    primaryColor: 'не указан',
-    colors: [],
-    styles: ['casual'],
-    brand: null,
-    material: 'не указан',
-    seasons: ['spring', 'autumn'],
-    warmth: 3,
-    formality: 2,
-    minTempC: 10,
-    maxTempC: 20,
-    occasions: ['walk'],
-    description: 'Добавьте ключ Claude API в настройках, чтобы ИИ заполнял карточки автоматически.',
-  };
+  return JSON.parse(textBlock.text);
 }

@@ -9,7 +9,16 @@ import { useWardrobe } from '@/store/wardrobe';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
-  const { anthropicApiKey, userName, setApiKey, setUserName } = useSettings();
+  const {
+    anthropicApiKey,
+    proxyUrl,
+    proxyToken,
+    userName,
+    setApiKey,
+    setProxyUrl,
+    setProxyToken,
+    setUserName,
+  } = useSettings();
   const itemCount = useWardrobe((s) => s.items.length);
   const outfitCount = useWardrobe((s) => s.savedOutfits.length);
 
@@ -30,7 +39,33 @@ export default function SettingsScreen() {
           placeholderTextColor={palette.muted}
         />
 
-        <Text style={styles.label}>Ключ Claude API</Text>
+        <Text style={styles.label}>Сервер BLNR (рекомендуется)</Text>
+        <TextInput
+          style={styles.input}
+          value={proxyUrl}
+          onChangeText={setProxyUrl}
+          placeholder="https://blnr.example.com"
+          placeholderTextColor={palette.muted}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="url"
+        />
+        <TextInput
+          style={[styles.input, { marginTop: spacing(2) }]}
+          value={proxyToken}
+          onChangeText={setProxyToken}
+          placeholder="Токен приложения (x-app-token)"
+          placeholderTextColor={palette.muted}
+          autoCapitalize="none"
+          autoCorrect={false}
+          secureTextEntry
+        />
+        <Text style={styles.hint}>
+          Backend-прокси из каталога server/ репозитория: ключ Claude хранится на сервере и не
+          попадает в приложение. Если адрес задан, распознавание идёт через сервер.
+        </Text>
+
+        <Text style={styles.label}>Ключ Claude API (альтернатива)</Text>
         <TextInput
           style={styles.input}
           value={anthropicApiKey}
@@ -42,9 +77,8 @@ export default function SettingsScreen() {
           secureTextEntry
         />
         <Text style={styles.hint}>
-          Ключ нужен для ИИ-распознавания одежды по фото. Получить его можно в консоли
-          platform.claude.com. Ключ хранится только на этом устройстве. Для публичного релиза
-          рекомендуется проксировать запросы через свой сервер, а не вшивать ключ в приложение.
+          Прямые запросы к Claude API с устройства — удобно для разработки. Используется, только
+          если адрес сервера не задан. Ключ хранится только на этом устройстве.
         </Text>
 
         <View style={styles.about}>
